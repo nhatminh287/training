@@ -15,7 +15,7 @@ from sklearn.cluster import KMeans
 
 df = pd.read_csv('cities.csv', sep=';')
 
-print("df: ", df)
+# print("df: ", df)
 
 
 country_names = df['country_name']
@@ -44,7 +44,7 @@ longitude.to_csv('longitude.csv', sep=';')
 
 l2 = pd.DataFrame({'latitude': latitude, 'longitude': longitude})
 
-print("l2:", l2)
+# print("l2:", l2)
 
 
 kmeans = KMeans(20)
@@ -53,17 +53,22 @@ kmeans.fit(l2)
 identified_clusters = kmeans.fit_predict(l2)
 identified_clusters = list(identified_clusters)
 
-print('identify_clusters: ',identified_clusters)
+# print('identify_clusters: ',identified_clusters)
 
 training = pd.DataFrame({'city': city_names, 'state': state_names, 'country': country_names, 'latitude': latitude, 'longitude': longitude, 'loc_clusters' : identified_clusters})
 
-print('training: ',training)
+# print('training: ',training)
 
-input_city = input("Enter a city name:")
+import sys
+import json
+
+input_city = str(sys.argv[1])
 cluster = training.loc[training['city'] == input_city, 'loc_clusters']
-print('cluster:', cluster)
+# print('cluster:', cluster)
 cluster = cluster.iloc[0]
 cities_and_states = training.loc[training['loc_clusters'] == cluster, ['city', 'state']]
+
+cityList = []
 
 for c in range(len(cities_and_states)):
     city = cities_and_states.iloc[c]['city']
@@ -71,4 +76,8 @@ for c in range(len(cities_and_states)):
     if city == input_city:
         continue
     else:
-        print(city + ',' + state)
+        # print(city + ',' + state)
+        cityList.append(city + ',' + state)
+
+print(json.dumps(cityList))
+sys.stdout.flush()
